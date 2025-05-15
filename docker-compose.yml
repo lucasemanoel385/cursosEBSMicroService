@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8081
+    networks:
+      - microservices
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: plataform
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: lucas2010
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./dados_mysql:/var/lib/mysql
+    networks:
+      - microservices
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"     # Porta de comunicação AMQP
+      - "15672:15672"   # Painel de administração
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices
+
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8082
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      CORS_ALLOWED_ORIGIN: http://localhost
+    networks:
+      - microservices
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8083:8080"
+    depends_on:
+      - mysql
+      - eureka-server
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 0
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      DATABASE_URL: jdbc:mysql://mysql:3306/platform-user?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+    networks:
+      - microservices
+
+  course-service:
+    build:
+      context: ./course-service
+    ports:
+      - "8084:8080"
+    depends_on:
+      - mysql
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 0
+      DATABASE_URL: jdbc:mysql://mysql:3306/platform-course?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      GUMLET_APY_KEY: gumlet_ee229df33b92c0865152892c8b33d875
+      GUMLET_COLLECTION_ID: 6818e6359bfb1a1815af33bb
+    networks:
+      - microservices
+
+  enrollment-service:
+    build:
+      context: ./enrollment-service
+    ports:
+      - "8085:8080"
+    depends_on:
+      - mysql
+      - eureka-server
+      - rabbitmq
+      - user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 0
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      DATABASE_URL: jdbc:mysql://mysql:3306/platform-enrollment?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+    networks:
+      - microservices
+
+  payment-service:
+    build:
+      context: ./payment-service
+    ports:
+      - "8086:8080"
+    depends_on:
+      - mysql
+      - eureka-server
+      - rabbitmq
+      - user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 0
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      DATABASE_URL: jdbc:mysql://mysql:3306/platform-payment?createDatabaseIfNotExist=true
+      MERCADOPAGO_ACCESS_TOKEN: APP_USR-2398733663239316-031019-fdfa87aa466592e2456e0743dfa061b3-2314122909
+      URL_PAYMENT_SUCCESS: http://localhost/login
+      URL_PAYMENT_PENDING: http://localhost/
+      URL_PAYMENT_FAILURE: http://localhost/cursos
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+    networks:
+      - microservices
+
+  email-service:
+    build:
+      context: ./email-service
+    ports:
+      - "8087:8080"
+    depends_on:
+      - eureka-server
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 0
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+    networks:
+      - microservices
+
+  frontend:
+    build:
+      context: ./frontend/platform
+      args:
+        API_URL: http://gateway:8082
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - microservices
+
+networks:
+  microservices:
+    driver: bridge

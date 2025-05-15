@@ -1,0 +1,49 @@
+server:
+  port: 8082
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+rate-limiter:
+  limit: 4            # Máximo de 4 requisições por segundo
+  blockDuration: 5    # Tempo de bloqueio de 5 segundos ao exceder o limite
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            key-resolver: "#{@ipKeyResolver}"
+            rate-limiter: "#{@inMemoryRateLimiter}"
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PATCH
+              - PUT
+              - OPTIONS
+
+api:
+  security:
+    token:
+      secret: 12345

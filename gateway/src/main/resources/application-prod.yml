@@ -1,0 +1,49 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:gateway}
+  cloud:
+    gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            key-resolver: "#{@ipKeyResolver}"
+            rate-limiter: "#{@inMemoryRateLimiter}"
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "${CORS_ALLOWED_ORIGIN:http://localhost:4200}"
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PATCH
+              - PUT
+              - OPTIONS
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8081/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+
+rate-limiter:
+  limit: ${RATE_LIMITER_LIMIT:4}              # Máximo de requisições por segundo
+  blockDuration: ${RATE_LIMITER_BLOCK:5}      # Tempo de bloqueio em segundos
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:12345}
