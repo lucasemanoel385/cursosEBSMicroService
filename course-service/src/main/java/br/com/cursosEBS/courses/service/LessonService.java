@@ -35,10 +35,8 @@ public class LessonService {
         Course course = coursesRepository.findById(dto.courseId())
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
 
-        // Faz o upload do vídeo e obtém os dados da resposta
         GumletUploadResponse gumletResponse = gumletService.createUploadAsset(dto.title(),  course.getPlaylistId()); // exemplo de collectionId
 
-        // Faz o PUT do vídeo para o Gumlet
         gumletService.uploadVideoToSignedUrl(gumletResponse.getUpload_url(), file);
 
         // Cria a lesson com os dados retornados

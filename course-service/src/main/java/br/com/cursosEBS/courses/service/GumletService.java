@@ -110,7 +110,7 @@ public class GumletService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("collection_id", "6818e6359bfb1a1815af33bb");
+        payload.put("collection_id", colleactionId);
         payload.put("title", title);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
