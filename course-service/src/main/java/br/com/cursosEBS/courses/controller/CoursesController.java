@@ -1,6 +1,7 @@
 package br.com.cursosEBS.courses.controller;
 
 import br.com.cursosEBS.courses.dto.CoursesDTO;
+import br.com.cursosEBS.courses.dto.CoursesReturnRegisterDTO;
 import br.com.cursosEBS.courses.dto.PageDTO;
 import br.com.cursosEBS.courses.service.CoursesService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class CoursesController {
     private CoursesService service;
 
     @PostMapping
-    public ResponseEntity<CoursesDTO> registerCourses(@RequestBody @Valid CoursesDTO dto, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<CoursesReturnRegisterDTO> registerCourses(@RequestBody @Valid CoursesDTO dto, UriComponentsBuilder uriBuilder) {
 
         var courses = service.registerCourses(dto);
         URI uri = uriBuilder.path("/courses/{id}").buildAndExpand(courses.id()).toUri();
