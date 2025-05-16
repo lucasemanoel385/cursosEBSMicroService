@@ -4,7 +4,6 @@ CREATE TABLE course (
  title VARCHAR(255) NOT NULL,
  description TEXT NULL,
  playlist_id VARCHAR(255),
- price DECIMAL(10,2) NOT NULL,
  created_at DATETIME NOT NULL,
  instructor_id bigint NOT NULL,
  category_id bigint NOT NULL,
