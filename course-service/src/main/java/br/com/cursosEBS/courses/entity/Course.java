@@ -34,9 +34,6 @@ public class Course {
     private String description;
 
     @NotNull
-    private BigDecimal price;
-
-    @NotNull
     private LocalDateTime createdAt;
 
     private String playlistId;
@@ -56,7 +53,6 @@ public class Course {
         this.imgUrl = dto.imgURL();
         this.title = dto.title();
         this.description = dto.description();
-        this.price = dto.price();
         this.createdAt = LocalDateTime.now();
         this.instructorId = dto.instructorId();
         this.category = category;

@@ -2,6 +2,7 @@ package br.com.cursosEBS.courses.service;
 
 import br.com.cursosEBS.courses.dto.CategoryDTO;
 import br.com.cursosEBS.courses.dto.CoursesDTO;
+import br.com.cursosEBS.courses.dto.CoursesReturnRegisterDTO;
 import br.com.cursosEBS.courses.dto.PageDTO;
 import br.com.cursosEBS.courses.entity.Category;
 import br.com.cursosEBS.courses.entity.Course;
@@ -20,7 +21,7 @@ public class CoursesService {
     @Autowired
     private GumletService gumletService;
 
-    public CoursesDTO registerCourses(CoursesDTO dto) {
+    public CoursesReturnRegisterDTO registerCourses(CoursesDTO dto) {
 
         var courses = new Course(dto, new Category(dto.categoryId()));
 
@@ -29,7 +30,7 @@ public class CoursesService {
         courses.setPlaylistId(response.getId());
 
         repository.save(courses);
-        return new CoursesDTO(courses);
+        return new CoursesReturnRegisterDTO(courses);
 
     }
 
