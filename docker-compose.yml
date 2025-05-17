@@ -97,8 +97,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
-      GUMLET_APY_KEY: gumlet_ee229df33b92c0865152892c8b33d875
-      GUMLET_COLLECTION_ID: 6818e6359bfb1a1815af33bb
+      GUMLET_APY_KEY:
+      GUMLET_COLLECTION_ID:
     networks:
       - microservices
 
@@ -140,7 +140,7 @@ services:
       SERVER_PORT: 0
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8081/eureka/
       DATABASE_URL: jdbc:mysql://mysql:3306/platform-payment?createDatabaseIfNotExist=true
-      MERCADOPAGO_ACCESS_TOKEN: APP_USR-2398733663239316-031019-fdfa87aa466592e2456e0743dfa061b3-2314122909
+      MERCADOPAGO_ACCESS_TOKEN:
       URL_PAYMENT_SUCCESS: http://localhost/login
       URL_PAYMENT_PENDING: http://localhost/
       URL_PAYMENT_FAILURE: http://localhost/cursos
