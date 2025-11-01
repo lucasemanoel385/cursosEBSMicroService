@@ -39,4 +39,14 @@ public class Payment {
         this.createdAt = LocalDateTime.now();
         this.paidMarketId = paidMarketId;
     }
+
+    public Payment(Payment paymentEntity) {
+
+        this.userId = paymentEntity.getUserId();
+        this.value = paymentEntity.getValue();
+        this.methodPayment = paymentEntity.getMethodPayment();
+        this.status = paymentEntity.getStatus();
+        this.createdAt = LocalDateTime.now();
+        this.paidMarketId = paymentEntity.getPaidMarketId();
+    }
 }
