@@ -5,11 +5,17 @@ import br.com.cursosEBS.enrollments.dto.EnrollmentDTO;
 import br.com.cursosEBS.enrollments.entity.Enrollment;
 import br.com.cursosEBS.enrollments.http.CourseClient;
 import br.com.cursosEBS.enrollments.http.UserClient;
+import br.com.cursosEBS.enrollments.infra.exception.ValidationException;
 import br.com.cursosEBS.enrollments.repository.EnrollmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class EnrollmentService {
@@ -26,7 +32,7 @@ public class EnrollmentService {
     public EnrollmentDTO registerEnrollment(Long userId, Long courseId) {
 
         if (Boolean.TRUE.equals(repository.existsEnrollmentWithUserIdAndEnrollId(userId, courseId))) {
-            throw new RuntimeException("Ja inscrito");
+            throw new ValidationException("Ja inscrito");
         }
 
         var enrollment = new Enrollment(userId, courseId);
@@ -64,6 +70,5 @@ public class EnrollmentService {
     public boolean findEnrollmentByIdUserAndEnroll(Long userId, Long courseId) {
 
         return repository.existsEnrollmentWithUserIdAndEnrollId(userId, courseId);
-
     }
 }
