@@ -21,8 +21,11 @@ public class EnrollmentController {
     private EnrollmentService service;
 
     @PostMapping("/{userId}/{courseId}")
-    public ResponseEntity<EnrollmentDTO> registerEnrollment(@PathVariable @NotNull Long userId, @PathVariable Long courseId, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<?> registerEnrollment(@PathVariable @NotNull Long userId, @PathVariable Long courseId, UriComponentsBuilder uriBuilder){
         var enrollment = service.registerEnrollment(userId, courseId);
+        if (enrollment == null) {
+            return ResponseEntity.badRequest().body("Matrícula inválida");
+        }
         URI uri = uriBuilder.path("/enrollment/{id}").buildAndExpand(enrollment.id()).toUri();
         return ResponseEntity.created(uri).body(enrollment);
     }
