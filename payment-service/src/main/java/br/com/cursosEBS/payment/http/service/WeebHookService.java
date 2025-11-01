@@ -24,12 +24,6 @@ public class WeebHookService {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private SubscriptionClient subscriptionClient;
-
-    @Autowired
-    private UserClient userClient;
-
-    @Autowired
     private RabbitTemplate rabbitTemplate;
 
     public void registerPayment(WebHookDTO dto) throws MPException, MPApiException {
@@ -48,7 +42,7 @@ public class WeebHookService {
         switchStatusOrCreateOrderPayment(payment, payment.getStatus());
     }
 
-    private void switchStatusOrCreateOrderPayment(Payment payment, String status) {
+    public void switchStatusOrCreateOrderPayment(Payment payment, String status) {
         var paymentRe = paymentRepository.findByPaidMarketId(payment.getId().toString());
 
         if (paymentRe.isPresent()) {
